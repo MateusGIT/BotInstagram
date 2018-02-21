@@ -12,6 +12,7 @@ import static org.apache.http.client.methods.RequestBuilder.options;
 import static org.apache.http.client.methods.RequestBuilder.options;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.WebElement;
@@ -25,9 +26,11 @@ import org.openqa.selenium.support.ui.Select;
  */
 public class InstagramLikes {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         WebDriver driver = new ChromeDriver();
-        String baseUrl = "https://generator.email//";
+        String expectedTitle = "https://www.instagram.com/accounts/registered/?hl=pt-br";
+        String actualTitle = "";
+        String baseUrl = "https://pt.emailfake.com/";
         driver.get(baseUrl);
         WebElement drop = driver.findElement(By.cssSelector(".e7m.dropselect.waves-effect.waves-light.waves-raised"));
         drop.click();
@@ -60,10 +63,56 @@ public class InstagramLikes {
         }
         System.out.println(ids);
         for (String s : ids) {
+            WebDriver second_driver = new ChromeDriver();
             WebElement email = driver.findElement(By.id(s));
             email.click();
             copy.click();
+            second_driver.get("https://www.instagram.com/");
+            WebElement login_email = second_driver.findElement(By.name("emailOrPhone"));
+            login_email.sendKeys(Keys.CONTROL + "v");
+            Thread.sleep(1000);
+            WebElement login_fullname = second_driver.findElement(By.name("fullName"));
+            login_fullname.sendKeys("Joao Kleber");
+            Thread.sleep(1000);
+            //WebElement login_name = second_driver.findElement(By.name("username"));
+            // login_name.sendKeys(s);
+            WebElement senha = second_driver.findElement(By.name("password"));
+            senha.sendKeys("ABCDE12345");
+            Thread.sleep(1000);
+            WebElement cadastrar = second_driver.findElement(By.xpath("//*[contains(text(), 'Cadastre-se')]"));
+            try {
+                cadastrar.submit();
+                Thread.sleep(100);
+                cadastrar.submit();
+                Thread.sleep(100);
+                cadastrar.submit();
+                Thread.sleep(100);
+                cadastrar.submit();
+                Thread.sleep(100);
+                cadastrar.submit();
+                Thread.sleep(100);
+                cadastrar.submit();
+                Thread.sleep(100);
+                cadastrar.submit();
+                Thread.sleep(1000);
+            } catch (Exception e) {
+            }
             drop.click();
+            actualTitle = second_driver.getTitle();
+            if (actualTitle.contentEquals(expectedTitle)) {
+                second_driver.get(" https://www.instagram.com/p/BaUlUzNF2xj/?hl=pt-br&taken-by=willer007/");
+                WebElement like = second_driver.findElement(By.xpath("//*[contains(text(), 'Curtir')]"));
+                like.click();
+                WebElement perfil = second_driver.findElement(By.xpath("//*[contains(text(), 'Perfil')]"));
+                perfil.click();
+                WebElement config = second_driver.findElement(By.cssSelector("_q8y0e.coreSpriteMobileNavSettings._8scx2"));
+                config.click();
+                WebElement sair = second_driver.findElement(By.xpath("//*[contains(text(), 'Sair')]"));
+                sair.click();
+                Thread.sleep(3000);
+            } else {
+                second_driver.close();
+            }
         }
         System.out.println(ids);
         //WebDriver's get() method is used to launch a new browser session and directs it to the URL that you specify as its parameter.
